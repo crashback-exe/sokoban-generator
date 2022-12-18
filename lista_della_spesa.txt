@@ -1,0 +1,7 @@
+- Funzione per generare un path casuale tra due punti creando un rettangolo
+con i due punti come vertici opposti
+
+Roadmap:
+Path tra box e button
+Path tra player e box
+Path tra player e la cella opposta al prossimo passo del box
