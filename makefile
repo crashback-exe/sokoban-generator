@@ -1,9 +1,9 @@
-all: clear comp exe
+all: clear compile exe
 
 clear:
 	cls
 
-comp:
+compile:
 	g++ main.cpp -o Sokoban.exe -static-libgcc -std=c++20 -I ./src
 
 exe:

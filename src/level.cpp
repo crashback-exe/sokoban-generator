@@ -74,7 +74,6 @@ private:
 	void GenerateGoals()
 	{
 		Coords2D placementCell;
-		bool isBoxInSourroundings = true;
 
 		for (int i = 0; i < boxCount; i++)
 		{
@@ -83,21 +82,14 @@ private:
 				placementCell.x = random(1, width - 2);
 				placementCell.y = random(1, height - 2);
 
-				for (int i = UP; i != RIGHT; i++)
-				{
-					DIRECTIONS direction = static_cast<DIRECTIONS>(i);
-					if (generatedLevel[placementCell.y + STEPS[direction].y][placementCell.x + STEPS[direction].x] == BOX)
-						isBoxInSourroundings = false;
-				}
-
-				if (generatedLevel[placementCell.y][placementCell.x] == WALL && isBoxInSourroundings)
+				if (generatedLevel[placementCell.y][placementCell.x] == WALL)
 				{
 					boxesPos[i].x = placementCell.x;
 					boxesPos[i].y = placementCell.y;
 					generatedLevel[boxesPos[i].y][boxesPos[i].x] = BOX;
 					break;
 				}
-			} while (generatedLevel[placementCell.y][placementCell.x] != WALL && !isBoxInSourroundings);
+			} while (generatedLevel[placementCell.y][placementCell.x] != WALL);
 
 			do
 			{
@@ -124,12 +116,10 @@ private:
 		for (int i = 0; i < boxCount; i++)
 		{
 			path = FindRandomPath(boxesPos[i], targetPos[i], boxesPos);
+			// path = FindRandomPath(playerPos, boxesPos[i]);
+
 			for (Coords2D cell : path)
-			{
 				generatedLevel[cell.y][cell.x] = SPACE;
-				// direction = FindDirection(cell, boxesPos[i]);
-				// generatedLevel[cell.y + direction.y][cell.x + direction.x] = SPACE;
-			}
 		}
 	}
 
@@ -159,7 +149,14 @@ public:
 		// Randomically place player in the level
 		PlacePlayer();
 		GenerateGoals();
+
+		/* Debug */
+		cout << "/*     */" << endl;
 		Show();
+		cout << "/*     */" << endl
+			 << endl;
+		/* Debug */
+
 		GeneratePaths();
 	}
 
@@ -225,13 +222,13 @@ public:
 				{
 					if (pos.x == boxesPos[i].x && pos.y == boxesPos[i].y)
 					{
-						cout << (char)BOX << " ";
+						cout << ((char)(i + 'A')) << " "; // BOXES
 						printed = true;
 						break;
 					}
 					else if (pos.x == targetPos[i].x && pos.y == targetPos[i].y)
 					{
-						cout << (char)TARGET << " ";
+						cout << ((char)(i + '1')) << " "; // TARGETS
 						printed = true;
 						break;
 					}
