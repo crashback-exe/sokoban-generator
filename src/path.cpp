@@ -53,62 +53,53 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 	{
 		printf("from.x == to.x: %d\n", from.x == to.x);
 		printf("from.y == to.y: %d\n\n", from.y == to.y);
+
 		// Check if from and to are inline
-		if (from.x == to.x || from.y == to.y)
-		{
-			Debug();
-			// from and to are in an horizontal line
-			if (from.x == to.x)
-			{
-				// Randomically go top or bottom if possible (1 / -1)
-				int direction = random(0, 1) ? 1 : -1;
+		// if (from.x == to.x || from.y == to.y) 
+		// {
+		// 	Debug();
+		// 	// from and to are in an horizontal line
+		// 	if (from.x == to.x)
+		// 	{
+		// 		// Check if the randomically selected cell is not occupied by an obstacle
+		// 		for (Coords2D obstacle : obstacles)
+		// 		{
+		// 			// Randomically go top or bottom if possible (1 / -1)
+		// 			int direction = random(0, 1) ? 1 : -1;
+					
+		// 			if (from.x == obstacle.x && from.y + direction == obstacle.y)
+		// 			{
+		// 				from.x += direction;
+		// 				path.push_back(Coords2D(from.x, from.y));
+		// 				return FindRandomPath(from, to, gridSize, obstacles);
+		// 			}
+		// 		}
 
-				// Check if the direction is inside the grid
-				bool placeable = true;
-				if (from.y + direction >= gridSize.y)
-					placeable = false;
+		// 		from.y += increase.y;
+		// 	}
+		// 	// from and to are in a vertical line
+		// 	else if (from.y == to.y)
+		// 	{
+		// 		// Check if the randomically selected cell is not occupied by an obstacle
+		// 		for (Coords2D obstacle : obstacles)
+		// 		{
+		// 			// Randomically go top or bottom if possible (1 / -1)
+		// 			int direction = random(0, 1) ? 1 : -1;
+					
+		// 			if (from.x == obstacle.x && from.y + direction == obstacle.y)
+		// 			{
+		// 				from.y += direction;
+		// 				path.push_back(Coords2D(from.x, from.y));
+		// 				return FindRandomPath(from, to, gridSize, obstacles);
+		// 			}
+		// 		}
 
-				// Check if the randomically selected cell is not occupied by an obstacle
-				for (Coords2D obstacle : obstacles)
-				{
-					if (from.x == obstacle.x && from.y + direction == obstacle.y)
-					{
-						placeable = false;
-						break; // avoid unnecessary checks
-					}
-				}
+		// 		from.x += increase.x;
+		// 	}
 
-				if (placeable)
-					from.x += direction;
-			}
-			// from and to are in a vertical line
-			else if (from.y == to.y)
-			{
-				// Randomically go top or bottom if possible (1 / -1)
-				int direction = random(0, 1) ? 1 : -1;
-
-				// Check if the direction is inside the grid
-				bool placeable = true;
-				if (from.x + direction >= gridSize.x)
-					placeable = false;
-
-				// Check if the randomically selected cell is not occupied by an obstacle
-				for (Coords2D obstacle : obstacles)
-				{
-					if (from.y == obstacle.y && from.x + direction == obstacle.x)
-					{
-						placeable = false;
-						break; // avoid unnecessary checks
-					}
-				}
-
-				if (placeable)
-					from.x += direction;
-			}
-
-			path.push_back(Coords2D(from.x, from.y));
-			continue;
-		}
+		// 	path.push_back(Coords2D(from.x, from.y));
+		// 	continue;
+		// }
 
 		// X is chosen
 		if ((random(0, 1) && from.x != to.x) || from.y == to.y)
@@ -139,78 +130,15 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 			if (place)
 				from.y += increase.y;
 		}
+		Coords2D a = {from.x, from.y};
 		if (place)
-			path.push_back(Coords2D(from.x, from.y));
+			path.push_back(a);
 	}
 
 	return path;
 }
 
 /*
-bool ObstacleX(Coords2D, Coords2D, vector<Coords2D>&, vector<Coords2D>);
-
-bool ObstacleY(Coords2D from, Coords2D increase, vector<Coords2D> &path, vector<Coords2D> obstacles = {})
-{
-	Coords2D ghostPlayer;
-	ghostPlayer.x = from.x;
-	ghostPlayer.y = from.y + increase.y;
-
-	for (Coords2D obstacle : obstacles)
-	{
-		if (obstacle.x == ghostPlayer.x && obstacle.y == ghostPlayer.y)
-		{
-			increase.x = -increase.x;
-			if (ObstacleX(from, increase, path, obstacles))
-				return true;
-
-			from.x += increase.x;
-			path.push_back(Coords2D(from.x, from.y));
-
-
-			if (ObstacleY(from, increase, path, obstacles));
-				return true;
-
-			from.y += increase.y;
-			path.push_back(Coords2D(from.x, from.y));
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool ObstacleX(Coords2D from, Coords2D increase, vector<Coords2D> &path, vector<Coords2D> obstacles = {})
-{
-	Coords2D ghostPlayer;
-	ghostPlayer.x = from.x + increase.x;
-	ghostPlayer.y = from.y;
-
-	for (Coords2D obstacle : obstacles)
-	{
-		if (obstacle.x == ghostPlayer.x && obstacle.y == ghostPlayer.y)
-		{
-			increase.y = -increase.y;
-			if (ObstacleY(from, increase, path, obstacles));
-				return true;
-
-			from.y += increase.y;
-			path.push_back(Coords2D(from.x, from.y));
-
-
-			if (ObstacleX(from, increase, path, obstacles));
-				return true;
-
-			from.x += increase.x;
-			path.push_back(Coords2D(from.x, from.y));
-			return true;
-		}
-	}
-
-	return false;
-}
-*/
-/*
-
 /// @brief Finds a random valid path between two coordinates avoiding obstacles
 /// @param from Point to start from
 /// @param to Point of arrival
@@ -239,8 +167,6 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, vector<Coords2D> obs
 		{
 			// X is chosen
 
-			if (ObstacleX(from, increase, path, obstacles))
-				FindRandomPath(from, to, obstacles);
 			// for (Coords2D obstacle : obstacles)
 			// {
 			// 	if (obstacle.x == (from.x + increase.x) && obstacle.y == from.y)
@@ -260,9 +186,6 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, vector<Coords2D> obs
 		else if (from.y != to.y)
 		{
 			// Y is chosen
-
-			if (ObstacleY(from, increase, path, obstacles))
-				FindRandomPath(from, to, obstacles);
 
 			for (Coords2D obstacle : obstacles)
 			{
