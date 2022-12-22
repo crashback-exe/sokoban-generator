@@ -115,7 +115,7 @@ private:
 		Coords2D direction;
 		for (int i = 0; i < boxCount; i++)
 		{
-			path = FindRandomPath(boxesPos[i], targetPos[i], boxesPos);
+			path = FindRandomPath(boxesPos[i], targetPos[i], Coords2D(width, height), boxesPos);
 			// path = FindRandomPath(playerPos, boxesPos[i]);
 
 			for (Coords2D cell : path)
