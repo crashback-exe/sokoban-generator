@@ -17,7 +17,8 @@
             "intelliSenseMode": "gcc-x64",
             "compilerArgs": [
                 "-static-libgcc -std=c++14"
-            ]
+            ],
+            "configurationProvider": "ms-vscode.makefile-tools"
         }
     ],
     "version": 4

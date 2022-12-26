@@ -51,55 +51,59 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 
 	while (from.x != to.x || from.y != to.y)
 	{
-		printf("from.x == to.x: %d\n", from.x == to.x);
-		printf("from.y == to.y: %d\n\n", from.y == to.y);
+		place = true;
+		// printf("from.x == to.x: %d\n", from.x == to.x);
+		// printf("from.y == to.y: %d\n\n", from.y == to.y);
 
 		// Check if from and to are inline
-		// if (from.x == to.x || from.y == to.y) 
-		// {
-		// 	Debug();
-		// 	// from and to are in an horizontal line
-		// 	if (from.x == to.x)
-		// 	{
-		// 		// Check if the randomically selected cell is not occupied by an obstacle
-		// 		for (Coords2D obstacle : obstacles)
-		// 		{
-		// 			// Randomically go top or bottom if possible (1 / -1)
-		// 			int direction = random(0, 1) ? 1 : -1;
+		if (from.x == to.x || from.y == to.y) 
+		{
+			// from and to are in an horizontal line
+			if (from.x == to.x)
+			{
+				// Check if the randomically selected cell is not occupied by an obstacle
+				for (Coords2D obstacle : obstacles)
+				{
+					// Randomically go top or bottom if possible (1 / -1)
+					int direction = random(0, 1) ? 1 : -1;
 					
-		// 			if (from.x == obstacle.x && from.y + direction == obstacle.y)
-		// 			{
-		// 				from.x += direction;
-		// 				path.push_back(Coords2D(from.x, from.y));
-		// 				return FindRandomPath(from, to, gridSize, obstacles);
-		// 			}
-		// 		}
+					if (from.x == obstacle.x && (from.y + increase.y) == obstacle.y)
+					{
+						from.x += direction;
+						path.push_back(Coords2D(from.x, from.y));
+						vector<Coords2D>newPath = FindRandomPath(from, to, gridSize, obstacles);
+						path.insert(path.end(), newPath.begin(), newPath.end());
+						return path;
+					}
+				}
 
-		// 		from.y += increase.y;
-		// 	}
-		// 	// from and to are in a vertical line
-		// 	else if (from.y == to.y)
-		// 	{
-		// 		// Check if the randomically selected cell is not occupied by an obstacle
-		// 		for (Coords2D obstacle : obstacles)
-		// 		{
-		// 			// Randomically go top or bottom if possible (1 / -1)
-		// 			int direction = random(0, 1) ? 1 : -1;
+				from.y += increase.y;
+			}
+			// from and to are in a vertical line
+			else if (from.y == to.y)
+			{
+				// Check if the randomically selected cell is not occupied by an obstacle
+				for (Coords2D obstacle : obstacles)
+				{
+					// Randomically go top or bottom if possible (1 / -1)
+					int direction = random(0, 1) ? 1 : -1;
 					
-		// 			if (from.x == obstacle.x && from.y + direction == obstacle.y)
-		// 			{
-		// 				from.y += direction;
-		// 				path.push_back(Coords2D(from.x, from.y));
-		// 				return FindRandomPath(from, to, gridSize, obstacles);
-		// 			}
-		// 		}
+					if ((from.x + increase.x) == obstacle.x && from.y == obstacle.y)
+					{
+						from.y += direction;
+						path.push_back(Coords2D(from.x, from.y));
+						vector<Coords2D>newPath = FindRandomPath(from, to, gridSize, obstacles);
+						path.insert(path.end(), newPath.begin(), newPath.end());
+						return path;
+					}
+				}
 
-		// 		from.x += increase.x;
-		// 	}
+				from.x += increase.x;
+			}
 
-		// 	path.push_back(Coords2D(from.x, from.y));
-		// 	continue;
-		// }
+			path.push_back(Coords2D(from.x, from.y));
+			continue;
+		}
 
 		// X is chosen
 		if ((random(0, 1) && from.x != to.x) || from.y == to.y)
@@ -120,19 +124,17 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 		{
 			for (Coords2D obstacle : obstacles)
 			{
-
-				if (obstacle.x == from.x && obstacle.y == from.y)
+				if (obstacle.x == from.x && obstacle.y == (from.y + increase.y))
 				{
-					place = true;
+					place = false;
 					break;
 				}
 			}
 			if (place)
 				from.y += increase.y;
 		}
-		Coords2D a = {from.x, from.y};
 		if (place)
-			path.push_back(a);
+			path.push_back(Coords2D(from.x, from.y));
 	}
 
 	return path;
