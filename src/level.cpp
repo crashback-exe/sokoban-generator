@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "utils.cpp"
+#include "random.cpp"
 #include "path.cpp"
 
 using std::cout;
@@ -23,6 +23,15 @@ enum CELL_TYPES
 	SPACE = ' ',
 	BOX = '$',
 	TARGET = '.',
+};
+
+/// @brief List of possible directions
+enum DIRECTIONS
+{
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
 };
 
 /// @brief List of possible player steps
@@ -206,8 +215,10 @@ public:
 		bool printed;
 
 		cout << "   ";
-		for (int i=0; i<width ;i++) cout << i << " ";
-		cout << endl << endl;
+		for (int i = 0; i < width; i++)
+			cout << i << " ";
+		cout << endl
+			 << endl;
 
 		for (pos.y = 0; pos.y < height; pos.y++)
 		{

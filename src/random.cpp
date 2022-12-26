@@ -10,22 +10,6 @@ using std::endl;
 using std::string;
 using std::to_string;
 
-/// @brief Pair of Coordinates
-struct Coords2D
-{
-	int x;
-	int y;
-};
-
-/// @brief List of possible directions
-enum DIRECTIONS
-{
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-};
-
 /// @brief Generate a random integer in the given range (both ends comprhended)
 /// @param min Min number to be generated
 /// @param max Max number to be generated

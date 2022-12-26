@@ -3,12 +3,23 @@
 #include <iostream>
 #include <cstdio>
 #include <vector>
-#include "utils.cpp"
+#include "random.cpp"
 #include "level.cpp"
 
 using std::cout;
 using std::vector;
 
+/// @brief Pair of Coordinates
+struct Coords2D
+{
+	int x;
+	int y;
+};
+
+/// @brief Finds the direction to go from `from` to `to`
+/// @param from The start position
+/// @param to The end position
+/// @return The direction as Coords2D struct
 Coords2D FindDirection(Coords2D from, Coords2D to)
 {
 	Coords2D increase;
@@ -47,11 +58,7 @@ Coords2D FindDirection(Coords2D from, Coords2D to)
 vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, vector<Coords2D> obstacles = {})
 {
 	vector<Coords2D> path;
-
 	Coords2D increase = FindDirection(from, to);
-
-	printf("From: (%d;%d), To: (%d;%d)\n", from.x, from.y, to.x, to.y);
-	printf("iX: %d, iY: %d\n", increase.x, increase.y);
 
 	while (from.x != to.x || from.y != to.y)
 	{
@@ -114,7 +121,7 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 
 			from.x += increase.x;
 		}
-		
+
 		// Y is chosen
 		else if (from.y != to.y)
 		{
@@ -136,7 +143,6 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 
 		path.push_back(Coords2D(from.x, from.y));
 	}
-
 
 	return path;
 }
