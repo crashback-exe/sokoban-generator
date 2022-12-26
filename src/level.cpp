@@ -205,8 +205,13 @@ public:
 		Coords2D pos;
 		bool printed;
 
+		cout << "   ";
+		for (int i=0; i<width ;i++) cout << i << " ";
+		cout << endl << endl;
+
 		for (pos.y = 0; pos.y < height; pos.y++)
 		{
+			cout << pos.y << "  ";
 			for (pos.x = 0; pos.x < width; pos.x++)
 			{
 				printed = false;
