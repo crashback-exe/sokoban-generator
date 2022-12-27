@@ -62,20 +62,8 @@ private:
 	/// @brief Generate the player in a random position in the level
 	void PlacePlayer()
 	{
-		Coords2D placementCell;
-
-		do
-		{
-			placementCell.x = random(0, width - 1);
-			placementCell.y = random(0, height - 1);
-
-			if (level[placementCell.y][placementCell.x] == WALL)
-			{
-				playerPos.x = placementCell.x;
-				playerPos.y = placementCell.y;
-				break;
-			}
-		} while (level[placementCell.y][placementCell.x] != WALL);
+		playerPos.x = random(0, width - 1);
+		playerPos.y = random(0, height - 1);
 	}
 
 	/// @brief Generate boxes and targets in the level
@@ -86,6 +74,21 @@ private:
 
 		for (int i = 0; i < boxCount; i++)
 		{
+			// Target
+			do
+			{				
+				placementCell.x = random(0, width - 1);
+				placementCell.y = random(0, height - 1);
+
+				if (level[placementCell.y][placementCell.x] == WALL)
+				{
+					targetPos[i].x = placementCell.x;
+					targetPos[i].y = placementCell.y;
+					level[targetPos[i].y][targetPos[i].x] = TARGET;
+					break;
+				}
+			} while (level[placementCell.y][placementCell.x] != WALL);
+
 			// Box
 			do
 			{
@@ -96,7 +99,7 @@ private:
 
 				for (Coords2D box : boxesPos)
 				{
-					if (box.x == placementCell.x && box.y == placementCell.y)
+					if (box.x == placementCell.x && box.y == placementCell.y || level[placementCell.y][placementCell.x] != WALL)
 					{
 						isOccupied = true;
 						break;
@@ -110,32 +113,6 @@ private:
 					break;
 				}
 			} while (isOccupied);
-
-			// Target
-			do
-			{
-				isOccupied = false;
-				
-				placementCell.x = random(0, width - 1);
-				placementCell.y = random(0, height - 1);
-
-				for (Coords2D box : boxesPos)
-				{
-					if (box.x == placementCell.x && box.y == placementCell.y)
-					{
-						isOccupied = true;
-						break;
-					}
-				}
-
-				if (level[placementCell.y][placementCell.x] == WALL && !isOccupied)
-				{
-					targetPos[i].x = placementCell.x;
-					targetPos[i].y = placementCell.y;
-					level[targetPos[i].y][targetPos[i].x] = TARGET;
-					break;
-				}
-			} while (level[placementCell.y][placementCell.x] != WALL && isOccupied);
 		}
 	}
 
