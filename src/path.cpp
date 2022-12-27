@@ -4,7 +4,6 @@
 #include <cstdio>
 #include <vector>
 #include "random.cpp"
-#include "level.cpp"
 
 using std::cout;
 using std::vector;

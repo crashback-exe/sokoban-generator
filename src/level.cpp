@@ -20,7 +20,7 @@ enum CELL_TYPES
 {
 	PLAYER = '@',
 	WALL = '#',
-	SPACE = ' ',
+	PATH = ' ',
 	BOX = '$',
 	TARGET = '.',
 };
@@ -53,7 +53,7 @@ private:
 	vector<vector<CELL_TYPES>> baseLevel;
 
 	/// @brief The complete generated level
-	vector<vector<CELL_TYPES>> generatedLevel;
+	vector<vector<CELL_TYPES>> level;
 
 	int height;
 	int width;
@@ -69,67 +69,106 @@ private:
 			placementCell.x = random(0, width - 1);
 			placementCell.y = random(0, height - 1);
 
-			if (generatedLevel[placementCell.y][placementCell.x] == WALL)
+			if (level[placementCell.y][placementCell.x] == WALL)
 			{
 				playerPos.x = placementCell.x;
 				playerPos.y = placementCell.y;
-				generatedLevel[playerPos.y][playerPos.x] = PLAYER;
 				break;
 			}
-		} while (generatedLevel[placementCell.y][placementCell.x] != WALL);
+		} while (level[placementCell.y][placementCell.x] != WALL);
 	}
 
 	/// @brief Generate boxes and targets in the level
 	void GenerateGoals()
 	{
 		Coords2D placementCell;
+		bool isOccupied;
 
 		for (int i = 0; i < boxCount; i++)
 		{
+			// Box
 			do
 			{
+				isOccupied = false;
+
 				placementCell.x = random(1, width - 2);
 				placementCell.y = random(1, height - 2);
 
-				if (generatedLevel[placementCell.y][placementCell.x] == WALL)
+				for (Coords2D box : boxesPos)
+				{
+					if (box.x == placementCell.x && box.y == placementCell.y)
+					{
+						isOccupied = true;
+						break;
+					}
+				}
+
+				if (!isOccupied)
 				{
 					boxesPos[i].x = placementCell.x;
 					boxesPos[i].y = placementCell.y;
-					generatedLevel[boxesPos[i].y][boxesPos[i].x] = BOX;
 					break;
 				}
-			} while (generatedLevel[placementCell.y][placementCell.x] != WALL);
+			} while (isOccupied);
 
+			// Target
 			do
 			{
+				isOccupied = false;
+				
 				placementCell.x = random(0, width - 1);
 				placementCell.y = random(0, height - 1);
 
-				if (generatedLevel[placementCell.y][placementCell.x] == WALL)
+				for (Coords2D box : boxesPos)
+				{
+					if (box.x == placementCell.x && box.y == placementCell.y)
+					{
+						isOccupied = true;
+						break;
+					}
+				}
+
+				if (level[placementCell.y][placementCell.x] == WALL && !isOccupied)
 				{
 					targetPos[i].x = placementCell.x;
 					targetPos[i].y = placementCell.y;
-					generatedLevel[targetPos[i].y][targetPos[i].x] = TARGET;
+					level[targetPos[i].y][targetPos[i].x] = TARGET;
 					break;
 				}
-			} while (generatedLevel[placementCell.y][placementCell.x] != WALL);
+			} while (level[placementCell.y][placementCell.x] != WALL && isOccupied);
 		}
 	}
 
 	/// @brief Generate paths in the level
 	void GeneratePaths()
 	{
-		// First generate the paths between box and his target
-		vector<Coords2D> path;
+		// Generate the paths between box and his target
+		vector<Coords2D> paths, path, tempBoxesPos;
+
 		Coords2D direction;
+
 		for (int i = 0; i < boxCount; i++)
 		{
-			path = FindRandomPath(boxesPos[i], targetPos[i], Coords2D(width, height), boxesPos);
-			// path = FindRandomPath(playerPos, boxesPos[i]);
+			tempBoxesPos = boxesPos;
 
-			for (Coords2D cell : path)
-				generatedLevel[cell.y][cell.x] = SPACE;
+			path = FindRandomPath(boxesPos[i], targetPos[i], Coords2D(width, height), boxesPos);
+			paths.insert(paths.end(), path.begin(), path.end());
+
+			for (Coords2D &box : tempBoxesPos)
+			{
+				if (box.x == boxesPos[i].x && box.y == boxesPos[i].y)
+				{
+					box.x = -1;
+					box.y = -1;
+				}
+			}
+
+			path = FindRandomPath(playerPos, boxesPos[i], Coords2D(width, height), tempBoxesPos);
+			paths.insert(paths.end(), path.begin(), path.end());
 		}
+
+		for (Coords2D cell : paths)
+			level[cell.y][cell.x] = PATH;
 	}
 
 public:
@@ -145,8 +184,7 @@ public:
 		width = _width;
 		boxCount = _boxCount;
 
-		baseLevel.resize(height, vector<CELL_TYPES>(width, WALL));
-		generatedLevel.resize(height, vector<CELL_TYPES>(width, WALL));
+		level.resize(height, vector<CELL_TYPES>(width, WALL));
 
 		boxesPos.resize(boxCount, Coords2D(-1, -1));
 		targetPos.resize(boxCount, Coords2D(-1, -1));
@@ -178,13 +216,15 @@ public:
 		Coords2D to = {from.x + STEPS[direction].x, from.y + STEPS[direction].y};
 
 		if (to.x < width && to.y < height && to.x >= 0 && to.y >= 0 &&
-			(generatedLevel[to.y][to.x] == SPACE || generatedLevel[to.y][to.x] == TARGET))
+			(level[to.y][to.x] == PATH || level[to.y][to.x] == TARGET))
 			return true;
 
-		if (generatedLevel[to.y][to.x] == WALL)
+		if (level[to.y][to.x] == WALL)
 			return false;
 
-		if (generatedLevel[to.y][to.x] == BOX)
+		// todo
+		// non possiamo usare level[][]
+		if (level[to.y][to.x] == BOX)
 		{
 			if (CanMoveTo(to, direction))
 				return true;
@@ -251,7 +291,7 @@ public:
 				}
 
 				if (!printed)
-					cout << (char)generatedLevel[pos.y][pos.x] << " ";
+					cout << (char)level[pos.y][pos.x] << " ";
 			}
 			cout << endl;
 		}

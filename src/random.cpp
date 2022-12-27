@@ -3,7 +3,6 @@
 #include <random>
 #include <string>
 #include <iostream>
-#include "level.cpp"
 
 using std::cout;
 using std::endl;
