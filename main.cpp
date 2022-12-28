@@ -8,11 +8,8 @@ int main(int argc, char *argv[])
 {
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
-	for (int i = 0; i < 100; i++)
-	{
-		level.Generate();
-		level.Show();
-	}
+	level.Generate();
+	level.Show();
 
 	char input;
 	for (;;)
