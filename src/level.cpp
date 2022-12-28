@@ -141,7 +141,7 @@ private:
 
 		Coords2D direction;
 		Coords2D gridSize(width, height),
-				 boxGridSize(width - 1, height - 1);
+			boxGridSize(width - 1, height - 1);
 
 		/// @brief Optimize a given path removing useless ways
 		/// @param path The path to be optimized
@@ -216,7 +216,6 @@ private:
 
 				// Insert the path
 				paths.insert(paths.end(), tempPath.begin(), tempPath.end());
-
 			}
 		}
 
@@ -253,54 +252,63 @@ public:
 		// Randomically place player in the level
 		PlacePlayer();
 		GenerateGoals();
-
-		/* Debug */
-		cout << "/*     */" << endl;
-		Show();
-		cout << "/*     */" << endl
-			 << endl;
-		/* Debug */
-
 		GeneratePaths();
-	}
-
-	/// @brief Check if the player can move from a cell to a cell
-	/// @param from The starting cell
-	/// @param to The target cell
-	/// @return true if the player can move to the cell, otherwise false
-	bool CanMoveTo(Coords2D from, DIRECTIONS direction)
-	{
-		Coords2D to = {from.x + STEPS[direction].x, from.y + STEPS[direction].y};
-
-		if (to.x < width && to.y < height && to.x >= 0 && to.y >= 0 &&
-			(level[to.y][to.x] == PATH || level[to.y][to.x] == TARGET))
-			return true;
-
-		if (level[to.y][to.x] == WALL)
-			return false;
-
-		if (level[to.y][to.x] == BOX)
-		{
-			if (CanMoveTo(to, direction))
-				return true;
-			return false;
-		}
-
-		cout << "QUESTA SCRITTA NON DEVE MAI APPARIRE" << endl;
-		return false;
 	}
 
 	/// @brief Moves the player in the given direction
 	/// @param direction The direction where the player moves
 	/// @return true if the player has moved, false if it hasn't
-	bool PlayerMove(DIRECTIONS direction)
+	void PlayerMove(DIRECTIONS direction)
 	{
-		if (!CanMoveTo(playerPos, direction))
-			return false;
+		// To is the cell we want to go
+		Coords2D to, boxTo;
+		to.x = playerPos.x + STEPS[direction].x;
+		to.y = playerPos.y + STEPS[direction].y;
 
-		playerPos.x += STEPS[direction].x;
-		playerPos.y += STEPS[direction].y;
-		return true;
+		// Check if the position corresponds to a wall
+		if (level[to.y][to.x] == WALL || to.x >= width || to.y >= height || to.x < 0 || to.y < 0)
+			return;
+
+		// Check if the position corresponds to any of the boxes
+		for (Coords2D &boxPos : boxesPos)
+		{
+			// If corresponds, check if the positon behind that box is free
+			if (to.x == boxPos.x && to.y == boxPos.y)
+			{
+
+				boxTo.x = to.x + STEPS[direction].x;
+				boxTo.y = to.y + STEPS[direction].y;
+
+				// Check if the cell after the box is free
+				if ((boxTo.x < width && boxTo.y < height && boxTo.x >= 0 && boxTo.y >= 0) &&
+					(level[boxTo.y][boxTo.x] == PATH || level[boxTo.y][boxTo.x] == TARGET))
+				{
+					bool isBoxBehind = false;
+					// Check if behind the box is another box
+					for (Coords2D everyOtherBoxPos : boxesPos)
+					{
+						if (everyOtherBoxPos.x == boxTo.x && everyOtherBoxPos.y == boxTo.y)
+							isBoxBehind = true;
+					}
+
+					if (isBoxBehind)
+						return;
+
+					boxPos.x = boxTo.x;
+					boxPos.y = boxTo.y;
+
+					playerPos.x = to.x;
+					playerPos.y = to.y;
+
+					return;
+				}
+
+				return;
+			}
+		}
+
+		playerPos.x = to.x;
+		playerPos.y = to.y;
 	}
 
 	/// @brief Print on standard output the level

@@ -60,7 +60,7 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 	Coords2D increase = FindDirection(from, to);
 
 	path.push_back(Coords2D(from.x, from.y));
-	
+
 	while (from.x != to.x || from.y != to.y)
 	{
 		// from and to are in a vertical line
@@ -75,8 +75,9 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 					//? lo scelgo random solo se posso
 					int randomDirection = (random(0, 1) ? 1 : -1);
 
-					from.y += ((from.y + randomDirection) > 0 && (from.y + randomDirection) < gridSize.y) 
-					? randomDirection : - randomDirection;
+					from.y += ((from.y + randomDirection) > 0 && (from.y + randomDirection) < gridSize.y)
+								  ? randomDirection
+								  : -randomDirection;
 
 					path.push_back(Coords2D(from.x, from.y));
 					vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, obstacles);
@@ -99,9 +100,10 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 				{
 					// Randomically go top or bottom if possible (1 / -1)
 					int randomDirection = (random(0, 1) ? 1 : -1);
-					
-					from.x += ((from.x + randomDirection) > 0 && (from.x + randomDirection) < gridSize.x) 
-					? randomDirection : - randomDirection;
+
+					from.x += ((from.x + randomDirection) > 0 && (from.x + randomDirection) < gridSize.x)
+								  ? randomDirection
+								  : -randomDirection;
 
 					path.push_back(Coords2D(from.x, from.y));
 					vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, obstacles);
@@ -122,9 +124,10 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 				{
 					// Randomically go top or bottom if possible (1 / -1)
 					int randomDirection = (random(0, 1) ? 1 : -1);
-					
-					from.y += ((from.y + randomDirection) > 0 && (from.y + randomDirection) < gridSize.y) 
-					? randomDirection : - randomDirection;
+
+					from.y += ((from.y + randomDirection) > 0 && (from.y + randomDirection) < gridSize.y)
+								  ? randomDirection
+								  : -randomDirection;
 
 					path.push_back(Coords2D(from.x, from.y));
 					vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, obstacles);
@@ -145,9 +148,10 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 				{
 					// Randomically go top or bottom if possible (1 / -1)
 					int randomDirection = (random(0, 1) ? 1 : -1);
-					
-					from.x += ((from.x + randomDirection) > 0 && (from.x + randomDirection) < gridSize.x) 
-					? randomDirection : - randomDirection;
+
+					from.x += ((from.x + randomDirection) > 0 && (from.x + randomDirection) < gridSize.x)
+								  ? randomDirection
+								  : -randomDirection;
 
 					path.push_back(Coords2D(from.x, from.y));
 					vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, obstacles);
