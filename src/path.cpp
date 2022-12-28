@@ -59,6 +59,8 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 	vector<Coords2D> path;
 	Coords2D increase = FindDirection(from, to);
 
+	path.push_back(Coords2D(from.x, from.y));
+	
 	while (from.x != to.x || from.y != to.y)
 	{
 		// from and to are in a vertical line

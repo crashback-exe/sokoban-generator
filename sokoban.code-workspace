@@ -52,7 +52,12 @@
 			"system_error": "cpp",
 			"limits": "cpp",
 			"numbers": "cpp",
-			"typeinfo": "cpp"
+			"typeinfo": "cpp",
+			"xstring": "cpp",
+			"xtree": "cpp",
+			"xutility": "cpp",
+			"cstring": "cpp",
+			"ctime": "cpp"
 		}
 	}
 }

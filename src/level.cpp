@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <iterator>
 #include "random.cpp"
 #include "path.cpp"
 
@@ -76,18 +77,32 @@ private:
 		{
 			// Target
 			do
-			{				
+			{
+				isOccupied = false;
+
 				placementCell.x = random(0, width - 1);
 				placementCell.y = random(0, height - 1);
 
-				if (level[placementCell.y][placementCell.x] == WALL)
+				if (level[placementCell.y][placementCell.x] != WALL ||
+					(playerPos.x == placementCell.x && playerPos.y == placementCell.y))
 				{
-					targetPos[i].x = placementCell.x;
-					targetPos[i].y = placementCell.y;
-					level[targetPos[i].y][targetPos[i].x] = TARGET;
-					break;
+					isOccupied = true;
+					continue;
 				}
-			} while (level[placementCell.y][placementCell.x] != WALL);
+
+				for (Coords2D box : boxesPos)
+				{
+					if (box.x == placementCell.x && box.y == placementCell.y)
+					{
+						isOccupied = true;
+						break;
+					}
+				}
+			} while (isOccupied);
+
+			targetPos[i].x = placementCell.x;
+			targetPos[i].y = placementCell.y;
+			level[targetPos[i].y][targetPos[i].x] = TARGET;
 
 			// Box
 			do
@@ -97,22 +112,25 @@ private:
 				placementCell.x = random(1, width - 2);
 				placementCell.y = random(1, height - 2);
 
+				if (level[placementCell.y][placementCell.x] != WALL ||
+					(playerPos.x == placementCell.x && playerPos.y == placementCell.y))
+				{
+					isOccupied = true;
+					continue;
+				}
+
 				for (Coords2D box : boxesPos)
 				{
-					if (box.x == placementCell.x && box.y == placementCell.y || level[placementCell.y][placementCell.x] != WALL)
+					if (box.x == placementCell.x && box.y == placementCell.y)
 					{
 						isOccupied = true;
 						break;
 					}
 				}
-
-				if (!isOccupied)
-				{
-					boxesPos[i].x = placementCell.x;
-					boxesPos[i].y = placementCell.y;
-					break;
-				}
 			} while (isOccupied);
+
+			boxesPos[i].x = placementCell.x;
+			boxesPos[i].y = placementCell.y;
 		}
 	}
 
@@ -120,32 +138,192 @@ private:
 	void GeneratePaths()
 	{
 		// Generate the paths between box and his target
-		vector<Coords2D> paths, path, tempBoxesPos;
+		vector<Coords2D> paths, path, tempPath;
 
 		Coords2D direction;
+		Coords2D gridSize(width, height);
+
+		auto OptimizePath = [](vector<Coords2D> path)
+		{
+			// auto slice = [](vector<Coords2D> &vect, int start, int end)
+			// {
+			// 	int k = end - start + 1;
+
+			// 	auto it = vect.cbegin() + start;
+			// 	while (it != vect.cend() && k--)
+			// 	{
+			// 		it = vect.erase(it);
+			// 	}
+			// };
+
+			int pathSize = (path.size() - 2);
+
+			auto i = path.begin();
+			while (i != path.end())
+			{
+				auto j = i + 1;
+				while (j != path.end())
+				{
+					if (i->x == j->x && i->y == j->y)
+					{
+						cout << "\n\npath[" << (i - path.begin()) << "].x: " << i->x << " path[" << (i - path.begin()) << "].y: " << i->y << endl;
+						cout << "path[" << (j - path.begin()) << "].x: " << j->x << " path[" << (j - path.begin()) << "].y: " << j->y << endl;
+						cout << "pre-palle " << (j - path.begin()) << endl;
+
+						cout << "mid-palle " << (j - path.begin()) << endl;
+
+						path.erase(i, j);
+
+						cout << "post-palle " << (j - path.begin()) << endl;
+					}
+
+					j++;
+				}
+				i++;
+			}
+
+			// int pathSize = (path.size() - 2);
+			// for (int i = 0; i < pathSize; i++)
+			// {
+			// 	if (i == 0)
+			// 		continue;
+
+			// 	for (int j = i + 1; j < pathSize; j++)
+			// 	{
+			// 		if (path[i].x == path[j].x && path[i].y == path[j].y)
+			// 		{
+			// 			cout << "\n\npath[" << i << "].x: " << path[i].x << " path[" << i << "].y: " << path[i].y << endl;
+			// 			cout << "path[" << j << "].x: " << path[j].x << " path[" << j << "].y: " << path[j].y << endl;
+			// 			cout << "pre-palle " << j << endl;
+
+			// 			auto first = path.cbegin() + i;
+			// 			auto last = path.cbegin() + j;
+
+			// 			cout << "mid-palle " << j << endl;
+
+			// 			cout << "first: x " << first->x << " y " << first->y << endl;
+			// 			cout << "last: x " << last->x << " y " << last->y << endl;
+			// 			path.erase(first, last);
+
+			// 			cout << "post-palle " << j << endl;
+			// 		}
+			// 	}
+			// }
+		};
 
 		for (int i = 0; i < boxCount; i++)
 		{
-			tempBoxesPos = boxesPos;
+			path = FindRandomPath(boxesPos[i], targetPos[i], gridSize, boxesPos);
 
-			path = FindRandomPath(boxesPos[i], targetPos[i], Coords2D(width, height), boxesPos);
-			paths.insert(paths.end(), path.begin(), path.end());
+			// OptimizePath(path);
 
-			for (Coords2D &box : tempBoxesPos)
+			/***/
+			int pathSize = (path.size() - 2);
+
+			auto ii = path.begin();
+			while (ii != path.end())
 			{
-				if (box.x == boxesPos[i].x && box.y == boxesPos[i].y)
+				auto ij = ii + 1;
+				while (ij != path.end())
 				{
-					box.x = -1;
-					box.y = -1;
+					if (ii->x == ij->x && ii->y == ij->y)
+					{
+						cout << "\n\npath[" << (ii - path.begin()) << "].x: " << ii->x << " path[" << (ii - path.begin()) << "].y: " << ii->y << endl;
+						cout << "path[" << (ij - path.begin()) << "].x: " << ij->x << " path[" << (ij - path.begin()) << "].y: " << ij->y << endl;
+						cout << "pre-palle " << (ij - path.begin()) << endl;
+
+						cout << "mid-palle " << (ij - path.begin()) << endl;
+
+						path.erase(ii, ij);
+
+						cout << "post-palle " << (ij - path.begin()) << endl;
+					}
+
+					ij++;
 				}
+				ii++;
 			}
 
-			path = FindRandomPath(playerPos, boxesPos[i], Coords2D(width, height), tempBoxesPos);
+			/***/
+
+			int size = path.size() - 2;
+			int k = 0;
+			// printf("PathSize %d\nPath %d %d\n", size + 2, path[0].x - FindDirection(path[0], path[1]).x, path[0].y - FindDirection(path[0], path[1]).y);
+			printf("\n\nPath:\n");
+			for (Coords2D coord : path)
+			{
+				printf("%d = x: %d y: %d\n", k, coord.x, coord.y);
+				k++;
+			}
+			// Coords2D oppositeCoord;
+			// for (int j = 0; j < size; j++)
+			// {
+			// 	oppositeCoord.x = path[j].x - FindDirection(path[j], path[j + 1]).x;
+			// 	oppositeCoord.y = path[j].y - FindDirection(path[j], path[j + 1]).y;
+
+			// 	if (j == 0)
+			// 		continue;
+
+			// 	printf("path[j] %d %d\n", path[j].x, path[j].y);
+			// 	printf("path[j + 1] %d %d\n", path[j + 1].x, path[j + 1].y);
+			// 	printf("oppositeCoord %d %d\n", oppositeCoord.x, oppositeCoord.y);
+			// 	printf("path[j - 1] %d %d\n\n", path[j - 1].x, path[j - 1].y);
+
+			// 	tempPath = FindRandomPath(path[j - 1], oppositeCoord, gridSize, vector<Coords2D>{path[j]});
+			// 	path.insert(path.end(), tempPath.begin(), tempPath.end());
+			// }
+
+			// Debug("end");
+
+			paths.insert(paths.end(), path.begin(), path.end());
+
+			path = FindRandomPath(playerPos,
+								  Coords2D(path[0].x - FindDirection(path[0], path[1]).x,
+										   path[0].y - FindDirection(path[0], path[1]).y),
+								  gridSize, boxesPos);
+
+			// OptimizePath(path);
+
+			/***/
+			pathSize = (path.size() - 2);
+
+			ii = path.begin();
+			while (ii != path.end())
+			{
+				auto ij = ii + 1;
+				while (ij != path.end())
+				{
+					if (ii->x == ij->x && ii->y == ij->y)
+					{
+						cout << "\n\npath[" << (ii - path.begin()) << "].x: " << ii->x << " path[" << (ii - path.begin()) << "].y: " << ii->y << endl;
+						cout << "path[" << (ij - path.begin()) << "].x: " << ij->x << " path[" << (ij - path.begin()) << "].y: " << ij->y << endl;
+						cout << "pre-palle " << (ij - path.begin()) << endl;
+
+						cout << "mid-palle " << (ij-path.begin()) << endl;
+
+						path.erase(ii, ij);
+
+						cout << "post-palle " << (ij-path.begin()) << endl;
+					}
+
+					ij++;
+				}
+				ii++;
+			}
+
+			/***/
+
 			paths.insert(paths.end(), path.begin(), path.end());
 		}
 
+		//? Optimize the paths
+		// todo
+
+		// Carve the paths
 		for (Coords2D cell : paths)
+		{
 			level[cell.y][cell.x] = PATH;
+		}
 	}
 
 public:
@@ -155,7 +333,8 @@ public:
 	SokobanLevel(int _height, int _width, int _boxCount)
 	{
 		if ((_height - 2) * (_width - 2) < _boxCount)
-			throw invalid_argument("Level " + to_string(_height) + "x" + to_string(_width) + " too small for " + to_string(_boxCount) + " boxes");
+			throw invalid_argument("Level " + to_string(_height) + "x" + to_string(_width) +
+								   " too small for " + to_string(_boxCount) + " boxes");
 
 		height = _height;
 		width = _width;
@@ -231,10 +410,11 @@ public:
 		Coords2D pos;
 		bool printed;
 
-		cout << "   ";
+		cout << " Y ";
 		for (int i = 0; i < width; i++)
 			cout << i << " ";
 		cout << endl
+			 << "X"
 			 << endl;
 
 		for (pos.y = 0; pos.y < height; pos.y++)
