@@ -137,87 +137,16 @@ private:
 	/// @brief Generate paths in the level
 	void GeneratePaths()
 	{
-		// Generate the paths between box and his target
 		vector<Coords2D> paths, path, tempPath;
 
 		Coords2D direction;
-		Coords2D gridSize(width, height);
+		Coords2D gridSize(width, height),
+				 boxGridSize(width - 1, height - 1);
 
-		auto OptimizePath = [](vector<Coords2D> path)
+		/// @brief Optimize a given path removing useless ways
+		/// @param path The path to be optimized
+		auto OptimizePath = [](vector<Coords2D> &path)
 		{
-			// auto slice = [](vector<Coords2D> &vect, int start, int end)
-			// {
-			// 	int k = end - start + 1;
-
-			// 	auto it = vect.cbegin() + start;
-			// 	while (it != vect.cend() && k--)
-			// 	{
-			// 		it = vect.erase(it);
-			// 	}
-			// };
-
-			int pathSize = (path.size() - 2);
-
-			auto i = path.begin();
-			while (i != path.end())
-			{
-				auto j = i + 1;
-				while (j != path.end())
-				{
-					if (i->x == j->x && i->y == j->y)
-					{
-						cout << "\n\npath[" << (i - path.begin()) << "].x: " << i->x << " path[" << (i - path.begin()) << "].y: " << i->y << endl;
-						cout << "path[" << (j - path.begin()) << "].x: " << j->x << " path[" << (j - path.begin()) << "].y: " << j->y << endl;
-						cout << "pre-palle " << (j - path.begin()) << endl;
-
-						cout << "mid-palle " << (j - path.begin()) << endl;
-
-						path.erase(i, j);
-
-						cout << "post-palle " << (j - path.begin()) << endl;
-					}
-
-					j++;
-				}
-				i++;
-			}
-
-			// int pathSize = (path.size() - 2);
-			// for (int i = 0; i < pathSize; i++)
-			// {
-			// 	if (i == 0)
-			// 		continue;
-
-			// 	for (int j = i + 1; j < pathSize; j++)
-			// 	{
-			// 		if (path[i].x == path[j].x && path[i].y == path[j].y)
-			// 		{
-			// 			cout << "\n\npath[" << i << "].x: " << path[i].x << " path[" << i << "].y: " << path[i].y << endl;
-			// 			cout << "path[" << j << "].x: " << path[j].x << " path[" << j << "].y: " << path[j].y << endl;
-			// 			cout << "pre-palle " << j << endl;
-
-			// 			auto first = path.cbegin() + i;
-			// 			auto last = path.cbegin() + j;
-
-			// 			cout << "mid-palle " << j << endl;
-
-			// 			cout << "first: x " << first->x << " y " << first->y << endl;
-			// 			cout << "last: x " << last->x << " y " << last->y << endl;
-			// 			path.erase(first, last);
-
-			// 			cout << "post-palle " << j << endl;
-			// 		}
-			// 	}
-			// }
-		};
-
-		for (int i = 0; i < boxCount; i++)
-		{
-			path = FindRandomPath(boxesPos[i], targetPos[i], gridSize, boxesPos);
-
-			// OptimizePath(path);
-
-			/***/
 			int pathSize = (path.size() - 2);
 
 			auto ii = path.begin();
@@ -228,96 +157,68 @@ private:
 				{
 					if (ii->x == ij->x && ii->y == ij->y)
 					{
-						cout << "\n\npath[" << (ii - path.begin()) << "].x: " << ii->x << " path[" << (ii - path.begin()) << "].y: " << ii->y << endl;
-						cout << "path[" << (ij - path.begin()) << "].x: " << ij->x << " path[" << (ij - path.begin()) << "].y: " << ij->y << endl;
-						cout << "pre-palle " << (ij - path.begin()) << endl;
-
-						cout << "mid-palle " << (ij - path.begin()) << endl;
-
 						path.erase(ii, ij);
-
-						cout << "post-palle " << (ij - path.begin()) << endl;
+						ij = ii;
 					}
 
 					ij++;
 				}
 				ii++;
 			}
+		};
 
-			/***/
+		// Generate the paths between box and his target
+		for (int i = 0; i < boxCount; i++)
+		{
+			// Find a path between the box and his corresponding target
+			path = FindRandomPath(boxesPos[i], targetPos[i], boxGridSize, boxesPos);
 
-			int size = path.size() - 2;
-			int k = 0;
-			// printf("PathSize %d\nPath %d %d\n", size + 2, path[0].x - FindDirection(path[0], path[1]).x, path[0].y - FindDirection(path[0], path[1]).y);
-			printf("\n\nPath:\n");
-			for (Coords2D coord : path)
-			{
-				printf("%d = x: %d y: %d\n", k, coord.x, coord.y);
-				k++;
-			}
-			// Coords2D oppositeCoord;
-			// for (int j = 0; j < size; j++)
-			// {
-			// 	oppositeCoord.x = path[j].x - FindDirection(path[j], path[j + 1]).x;
-			// 	oppositeCoord.y = path[j].y - FindDirection(path[j], path[j + 1]).y;
+			// Optimize the path to get rid of useless cells
+			OptimizePath(path);
 
-			// 	if (j == 0)
-			// 		continue;
-
-			// 	printf("path[j] %d %d\n", path[j].x, path[j].y);
-			// 	printf("path[j + 1] %d %d\n", path[j + 1].x, path[j + 1].y);
-			// 	printf("oppositeCoord %d %d\n", oppositeCoord.x, oppositeCoord.y);
-			// 	printf("path[j - 1] %d %d\n\n", path[j - 1].x, path[j - 1].y);
-
-			// 	tempPath = FindRandomPath(path[j - 1], oppositeCoord, gridSize, vector<Coords2D>{path[j]});
-			// 	path.insert(path.end(), tempPath.begin(), tempPath.end());
-			// }
-
-			// Debug("end");
-
+			// Insert the generated path into the to-be-carved cell list
 			paths.insert(paths.end(), path.begin(), path.end());
 
-			path = FindRandomPath(playerPos,
-								  Coords2D(path[0].x - FindDirection(path[0], path[1]).x,
-										   path[0].y - FindDirection(path[0], path[1]).y),
-								  gridSize, boxesPos);
+			int size = path.size();
 
-			// OptimizePath(path);
-
-			/***/
-			pathSize = (path.size() - 2);
-
-			ii = path.begin();
-			while (ii != path.end())
+			// Carve the path needed for the player to move the box
+			for (int j = 0; j < size - 1; j++)
 			{
-				auto ij = ii + 1;
-				while (ij != path.end())
+				/**
+				 * For every coordinate in the path, find the opposite direction the player should
+				 * go to get to the next coordinate and find a path to it to make the cell reachable
+				 */
+
+				// Calculate the opposite coordinate of the coordinate pair
+				Coords2D oppositeCoord;
+				oppositeCoord.x = path[j].x - FindDirection(path[j], path[j + 1]).x;
+				oppositeCoord.y = path[j].y - FindDirection(path[j], path[j + 1]).y;
+
+				// If it's the first iteration, calculate the path between the player and the first cell
+				if (j == 0)
 				{
-					if (ii->x == ij->x && ii->y == ij->y)
-					{
-						cout << "\n\npath[" << (ii - path.begin()) << "].x: " << ii->x << " path[" << (ii - path.begin()) << "].y: " << ii->y << endl;
-						cout << "path[" << (ij - path.begin()) << "].x: " << ij->x << " path[" << (ij - path.begin()) << "].y: " << ij->y << endl;
-						cout << "pre-palle " << (ij - path.begin()) << endl;
 
-						cout << "mid-palle " << (ij-path.begin()) << endl;
+					// Find the path
+					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, vector<Coords2D>{boxesPos[i]});
 
-						path.erase(ii, ij);
+					// Insert the path
+					paths.insert(paths.end(), tempPath.begin(), tempPath.end());
 
-						cout << "post-palle " << (ij-path.begin()) << endl;
-					}
-
-					ij++;
+					// Skip this iteration
+					continue;
 				}
-				ii++;
+
+				// Find the path between the cell and the cell before
+				tempPath = FindRandomPath(path[j - 1], oppositeCoord, gridSize, vector<Coords2D>{path[j]});
+
+				// Optimize the path
+				OptimizePath(tempPath);
+
+				// Insert the path
+				paths.insert(paths.end(), tempPath.begin(), tempPath.end());
+
 			}
-
-			/***/
-
-			paths.insert(paths.end(), path.begin(), path.end());
 		}
-
-		//? Optimize the paths
-		// todo
 
 		// Carve the paths
 		for (Coords2D cell : paths)
@@ -378,8 +279,6 @@ public:
 		if (level[to.y][to.x] == WALL)
 			return false;
 
-		// todo
-		// non possiamo usare level[][]
 		if (level[to.y][to.x] == BOX)
 		{
 			if (CanMoveTo(to, direction))
@@ -410,11 +309,11 @@ public:
 		Coords2D pos;
 		bool printed;
 
-		cout << " Y ";
+		cout << " X ";
 		for (int i = 0; i < width; i++)
 			cout << i << " ";
 		cout << endl
-			 << "X"
+			 << "Y"
 			 << endl;
 
 		for (pos.y = 0; pos.y < height; pos.y++)

@@ -28,7 +28,7 @@ int random(int min, int max)
 void Debug(string info = "")
 {
 	static int counter = 1;
-	cout << "# Debug " << counter << " " << info << endl;
+	cout << endl << "# Debug " << counter << " " << info << endl;
 	counter++;
 }
 
