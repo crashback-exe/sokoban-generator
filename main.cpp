@@ -1,7 +1,5 @@
-#include <iostream>
 #include <vector>
 #include <conio.h>
-#include <windows.h>
 #include "src/level.cpp"
 using namespace std;
 
@@ -11,7 +9,6 @@ int main(int argc, char *argv[])
 	
 	testLevel.Generate();
 	testLevel.Show();
-	
 
 	char input;
 	for (;;)

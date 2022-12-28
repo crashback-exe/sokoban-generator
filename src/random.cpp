@@ -1,13 +1,6 @@
 #pragma once
 
 #include <random>
-#include <string>
-#include <iostream>
-
-using std::cout;
-using std::endl;
-using std::string;
-using std::to_string;
 
 /// @brief Generate a random integer in the given range (both ends comprhended)
 /// @param min Min number to be generated
@@ -21,25 +14,4 @@ int random(int min, int max)
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(min, max);
 	return dis(gen);
-}
-
-/// @brief Prints a debug counter and an eventual string
-/// @param info Eventual string to be debugged
-void Debug(string info = "")
-{
-	static int counter = 1;
-	cout << endl
-		 << "# Debug " << counter << " " << info << endl;
-	counter++;
-}
-
-void Debug(const char *c)
-{
-	string s(c);
-	Debug(s);
-}
-
-void Debug(auto info)
-{
-	Debug(to_string(info));
 }

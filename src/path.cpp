@@ -1,11 +1,8 @@
 #pragma once
 
-#include <iostream>
-#include <cstdio>
 #include <vector>
 #include "random.cpp"
 
-using std::cout;
 using std::vector;
 
 /// @brief Pair of Coordinates

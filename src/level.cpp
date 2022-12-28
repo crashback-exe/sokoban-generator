@@ -1,11 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 #include <map>
-#include <string>
-#include <iterator>
 #include "random.cpp"
 #include "path.cpp"
 
@@ -199,7 +196,7 @@ private:
 				{
 
 					// Find the path
-					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, vector<Coords2D>{boxesPos[i]});
+					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, boxesPos);
 
 					// Insert the path
 					paths.insert(paths.end(), tempPath.begin(), tempPath.end());
@@ -257,7 +254,7 @@ public:
 	void Generate()
 	{
 		Deallocate();
-		
+
 		level.resize(height, vector<CELL_TYPES>(width, WALL));
 		boxesPos.resize(boxCount, Coords2D(-1, -1));
 		targetPos.resize(boxCount, Coords2D(-1, -1));
