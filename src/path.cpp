@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cstdio>
 #include "random.cpp"
 
 using std::vector;
@@ -69,7 +70,6 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 				if ((from.x + increase.x) == obstacle.x && from.y == obstacle.y)
 				{
 					// Randomically go top or bottom if possible (1 / -1)
-					//? lo scelgo random solo se posso
 					int randomDirection = (random(0, 1) ? 1 : -1);
 
 					from.y += ((from.y + randomDirection) > 0 && (from.y + randomDirection) < gridSize.y)

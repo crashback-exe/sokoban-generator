@@ -1,7 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <string>
+#include <stdexcept>
 #include <vector>
+#include <iterator>
 #include <map>
 #include "random.cpp"
 #include "path.cpp"
@@ -196,7 +199,7 @@ private:
 				{
 
 					// Find the path
-					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, boxesPos);
+					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, vector<Coords2D>{boxesPos[i]});
 
 					// Insert the path
 					paths.insert(paths.end(), tempPath.begin(), tempPath.end());
