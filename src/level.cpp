@@ -226,6 +226,13 @@ private:
 		}
 	}
 
+	void Deallocate()
+	{
+		boxesPos.clear();
+		targetPos.clear();
+		level.clear();
+	}
+
 public:
 	/// @brief Create a Sokoban level with given width and height
 	/// @param _height Level height
@@ -239,16 +246,22 @@ public:
 		height = _height;
 		width = _width;
 		boxCount = _boxCount;
+	}
 
-		level.resize(height, vector<CELL_TYPES>(width, WALL));
-
-		boxesPos.resize(boxCount, Coords2D(-1, -1));
-		targetPos.resize(boxCount, Coords2D(-1, -1));
+	~SokobanLevel()
+	{
+		Deallocate();
 	}
 
 	/// @brief Generate the board
 	void Generate()
 	{
+		Deallocate();
+		
+		level.resize(height, vector<CELL_TYPES>(width, WALL));
+		boxesPos.resize(boxCount, Coords2D(-1, -1));
+		targetPos.resize(boxCount, Coords2D(-1, -1));
+
 		// Randomically place player in the level
 		PlacePlayer();
 		GenerateGoals();

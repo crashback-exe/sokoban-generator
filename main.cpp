@@ -8,8 +8,10 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	SokobanLevel testLevel(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
+	
 	testLevel.Generate();
 	testLevel.Show();
+	
 
 	char input;
 	for (;;)
@@ -29,12 +31,12 @@ int main(int argc, char *argv[])
 		case 'd':
 			testLevel.PlayerMove(RIGHT);
 			break;
-		case 'e':
-			return 0;
 		case 'r':
 			system("cls");
 			testLevel.Generate();
 			break;
+		case 'e':
+			return 0;
 		default:
 			continue;
 		}
