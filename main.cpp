@@ -1,4 +1,6 @@
 #include <vector>
+#include <iostream>
+#include <stdexcept>
 #include <windows.h>
 #include <conio.h>
 #include "src/level.cpp"
@@ -6,6 +8,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+	if (argc <= 3) throw invalid_argument("Missing arguments!");
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
 	level.Generate();
