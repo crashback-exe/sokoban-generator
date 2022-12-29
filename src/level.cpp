@@ -373,4 +373,34 @@ public:
 			cout << endl;
 		}
 	}
+
+	void ShowJson()
+	{
+		cout << "{\"level\":[";
+		for (vector<CELL_TYPES> line : level)
+		{
+			cout << "[";
+			for (CELL_TYPES cell : line)
+			{
+				cout << "\"" << (char)cell << "\",";
+			}
+			cout << "],";
+		}
+		cout << "],";
+		cout << "\"player\":{\"x\":" << playerPos.x << ",\"y\":" << playerPos.y << "},";
+		cout << "\"box\":[";
+		for (Coords2D boxPos : boxesPos)
+		{
+			cout << "[" << boxPos.x << "," << boxPos.y << "],";
+		}
+		cout << "],";
+		cout << "\"target\":[";
+		for (Coords2D pos : targetPos)
+		{
+			cout << "[" << pos.x << "," << pos.y << "],";
+		}
+		cout << "],";
+		
+		cout << "}" << endl;
+	}
 };
