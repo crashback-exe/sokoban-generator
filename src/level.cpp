@@ -384,22 +384,22 @@ public:
 			{
 				cout << "\"" << (char)cell << "\",";
 			}
-			cout << "],";
+			cout << "\b],";
 		}
-		cout << "],";
+		cout << "\b],";
 		cout << "\"player\":{\"x\":" << playerPos.x << ",\"y\":" << playerPos.y << "},";
 		cout << "\"box\":[";
 		for (Coords2D boxPos : boxesPos)
 		{
 			cout << "[" << boxPos.x << "," << boxPos.y << "],";
 		}
-		cout << "],";
+		cout << "\b],";
 		cout << "\"target\":[";
 		for (Coords2D pos : targetPos)
 		{
 			cout << "[" << pos.x << "," << pos.y << "],";
 		}
-		cout << "],";
+		cout << "\b]";
 		
 		cout << "}" << endl;
 	}
