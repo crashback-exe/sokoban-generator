@@ -133,14 +133,13 @@ private:
 		vector<Coords2D> paths, path, tempPath;
 
 		Coords2D direction;
-		Coords2D gridSize(width, height),
-			boxGridSize(width - 1, height - 1);
+		Coords2D gridSize(width, height);
 
 		// Generate the paths between box and his target
 		for (int i = 0; i < boxCount; i++)
 		{
 			// Find a path between the box and his corresponding target
-			path = FindRandomPath(boxesPos[i], targetPos[i], boxGridSize, level, boxesPos);
+			path = FindRandomPath(boxesPos[i], targetPos[i], gridSize, level, boxesPos);
 
 			// Optimize the path to get rid of useless cells
 			OptimizePath(path);
