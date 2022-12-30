@@ -10,7 +10,6 @@ int random(int min, int max)
 {
 	// Credits: https://chat.openai.com/chat
 	std::random_device rd;
-	auto seed = rd();
 	std::mt19937 gen(rd());
 	std::uniform_int_distribution<> dis(min, max);
 	return dis(gen);

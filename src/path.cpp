@@ -18,14 +18,13 @@ enum CELL_TYPES
 {
 	WALL = '#',
 	PATH = ' ',
-	TARGET = '.',
 };
 
 /// @brief Checks if an obstacle is present
 /// @param obstacles obstacles to be checked
 /// @param coords coords to be checked
 /// @return true if there is, otherwise false
-bool IsObstaclePresent(Coords2D coords, vector<Coords2D> obstacles)
+bool IsPresent(Coords2D coords, vector<Coords2D> obstacles)
 {
 	/* Iterate over all the obstacles, if one of them has the same coordinates as the ones given, return false*/
 	for (Coords2D obstacle : obstacles)
@@ -111,7 +110,7 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 
 	vector<Coords2D> path;
 	Coords2D next, increase = FindDirection(from, to);
-
+	
 	path.push_back(from);
 
 	// While we're not at the end
@@ -121,14 +120,14 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 		if (from.x + increase.x >= 0 && from.x + increase.x < gridSize.x			// Inside the grid
 			&& !previouslyDodgedBox													// Hasn't passed a box previously
 			&& level[from.y][from.x + increase.x] != WALL							// Not a wall
-			&& !IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles) // Not a box
+			&& !IsPresent(Coords2D(from.x + increase.x, from.y), obstacles) // Not a box
 			&& from.x != to.x)
 			from.x += increase.x;
 		// If Y is already carved, prefer it
 		else if (from.y + increase.y >= 0 && from.y + increase.y < gridSize.y			 // Inside the grid
 				 && !previouslyDodgedBox												 // Hasn't passed a box previously
 				 && level[from.y + increase.y][from.x] != WALL							 // Not a wall
-				 && !IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles) // Not a box
+				 && !IsPresent(Coords2D(from.x, from.y + increase.y), obstacles) // Not a box
 				 && from.y != to.y)
 			from.y += increase.y;
 		/* If X and Y are not carved, choose randomly between X and Y */
@@ -138,7 +137,7 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 		{
 
 			// Check if the randomically selected cell is not occupied by an obstacle
-			if (IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles))
+			if (IsPresent(Coords2D(from.x + increase.x, from.y), obstacles))
 			{
 				previouslyDodgedBox = true;
 
@@ -167,7 +166,7 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 		{
 
 			// Check if the randomically selected cell is not occupied by an obstacle
-			if (IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles))
+			if (IsPresent(Coords2D(from.x, from.y + increase.y), obstacles))
 			{
 				previouslyDodgedBox = true;
 

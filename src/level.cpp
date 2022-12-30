@@ -10,7 +10,6 @@
 #include "random.cpp"
 #include "path.cpp"
 
-using std::copy;
 using std::cout;
 using std::endl;
 using std::invalid_argument;
@@ -40,6 +39,7 @@ class SokobanLevel
 private:
 	const char PLAYER = '@';
 	const char BOX = '$';
+	const char TARGET = '.';
 
 	Coords2D playerPos;
 	vector<Coords2D> boxesPos;
@@ -78,13 +78,12 @@ private:
 				placementCell.x = random(0, width - 1);
 				placementCell.y = random(0, height - 1);
 
-				if (!IsObstaclePresent(placementCell, obstacles))
+				if (!IsPresent(placementCell, obstacles))
 					break;
 			}
 
 			targetPos[i].x = placementCell.x;
 			targetPos[i].y = placementCell.y;
-			level[targetPos[i].y][targetPos[i].x] = TARGET;
 			obstacles.push_back(targetPos[i]);
 
 			// Box
@@ -93,7 +92,7 @@ private:
 				placementCell.x = random(1, width - 2);
 				placementCell.y = random(1, height - 2);
 
-				if (!IsObstaclePresent(placementCell, obstacles))
+				if (!IsPresent(placementCell, obstacles))
 					break;
 			}
 
@@ -222,7 +221,7 @@ public:
 		to.y = playerPos.y + STEPS[direction].y;
 
 		// Check if the position corresponds to a wall
-		if (level[to.y][to.x] == WALL || to.x >= width || to.y >= height || to.x < 0 || to.y < 0)
+		if ((to.x >= width || to.y >= height || to.x < 0 || to.y < 0) || level[to.y][to.x] == WALL)
 			return;
 
 		// Check if the position corresponds to any of the boxes
@@ -236,9 +235,7 @@ public:
 			boxTo.y = to.y + STEPS[direction].y;
 
 			// Check if the cell after the box is free
-			if ((boxTo.x < width && boxTo.y < height && boxTo.x >= 0 && boxTo.y >= 0) &&
-				level[boxTo.y][boxTo.x] != WALL &&
-				!IsObstaclePresent(boxTo, boxesPos))
+			if ((boxTo.x < width && boxTo.y < height && boxTo.x >= 0 && boxTo.y >= 0) && level[boxTo.y][boxTo.x] != WALL && !IsPresent(boxTo, boxesPos))
 			{
 				boxPos.x = boxTo.x;
 				boxPos.y = boxTo.y;
@@ -260,46 +257,22 @@ public:
 	void Show()
 	{
 		Coords2D pos;
-		bool printed;
-
-		cout << " X ";
-		for (int i = 0; i < width; i++)
-			cout << i << " ";
-		cout << endl
-			 << "Y"
-			 << endl;
 
 		for (pos.y = 0; pos.y < height; pos.y++)
 		{
 			cout << pos.y << "  ";
 			for (pos.x = 0; pos.x < width; pos.x++)
 			{
-				printed = false;
+				if (IsPresent(pos, vector<Coords2D>{playerPos}))
+					cout << PLAYER << " "; // PLAYER
 
-				if (pos.x == playerPos.x && pos.y == playerPos.y)
-				{
-					cout << (char)PLAYER << " ";
-					continue;
-				}
+				else if (IsPresent(pos, boxesPos))
+					cout << BOX << " "; // BOXES
 
-				// For every box/target pair
-				for (int i = 0; i < boxCount; i++)
-				{
-					if (pos.x == boxesPos[i].x && pos.y == boxesPos[i].y)
-					{
-						cout << ((char)(i + 'A')) << " "; // BOXES
-						printed = true;
-						break;
-					}
-					else if (pos.x == targetPos[i].x && pos.y == targetPos[i].y)
-					{
-						cout << ((char)(i + '1')) << " "; // TARGETS
-						printed = true;
-						break;
-					}
-				}
+				else if (IsPresent(pos, targetPos))
+					cout << TARGET << " "; // TARGETS
 
-				if (!printed)
+				else
 					cout << (char)level[pos.y][pos.x] << " ";
 			}
 			cout << endl;
