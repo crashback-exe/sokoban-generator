@@ -101,6 +101,8 @@ void OptimizePath(vector<Coords2D> &path)
 /// @return A Coords2D vector with all the points of the path
 vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, vector<vector<CELL_TYPES>> level, vector<Coords2D> obstacles = {})
 {
+	static bool prevBox = false;
+
 	vector<Coords2D> path;
 	Coords2D next, increase = FindDirection(from, to);
 
@@ -108,68 +110,71 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 
 	while (from.x != to.x || from.y != to.y)
 	{
-		next.x = from.x;
-		next.y = from.y;
-		// if (!prevBox &&
-		// 	(level[from.y][from.x + increase.x] == PATH || level[from.y][from.x + increase.x] == TARGET) &&
-		// 	!IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles))
-		// {
-		// 	printf("\nA\n");
 
-		// 	from.x += increase.x;
-		// }
+		if (from.x + increase.x >= 0 && from.x + increase.x < gridSize.x			// Inside the grid
+			&& !prevBox																// Hasn't passed a box previously
+			&& level[from.y][from.x + increase.x] != WALL							// Not a wall
+			&& !IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles) // Not a box
+			&& from.x != to.x)
+			from.x += increase.x;
 
-		// else if (!prevBox &&
-		// 		 (level[from.y + increase.y][from.x] == PATH || level[from.y + increase.y][from.x] == TARGET) &&
-		// 		 !IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles))
-		// {
-		// 	printf("\nB\n");
+		else if (from.y + increase.y >= 0 && from.y + increase.y < gridSize.y			 // Inside the grid
+				 && !prevBox															 // Hasn't passed a box previously
+				 && level[from.y + increase.y][from.x] != WALL							 // Not a wall
+				 && !IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles) // Not a box
+				 && from.y != to.y)
+			from.y += increase.y;
 
-		// 	from.y += increase.y;
-		// }
-
-		if ((random(0, 1) && from.x != to.x) || from.y == to.y)
+		else if ((random(0, 1) && from.x != to.x) || from.y == to.y)
 		{
-			next.x += increase.x;
+
 			// Check if the randomically selected cell is not occupied by an obstacle
-			if (IsObstaclePresent(next, obstacles))
+			if (IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles))
 			{
+				prevBox = true;
+
 				// Randomically go top or bottom if possible (1 / -1)
 				int randomDirection = (random(0, 1) ? 1 : -1);
 
 				from.y += (from.y + randomDirection > 0 && from.y + randomDirection < gridSize.y - 1)
-							  ? randomDirection : -randomDirection;
+							  ? randomDirection
+							  : -randomDirection;
 
 				path.push_back(from);
 				vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, level, obstacles);
 				path.insert(path.end(), newPath.begin(), newPath.end());
 				return path;
 			}
+			prevBox = false;
 
 			from.x += increase.x;
 		}
 
 		else
 		{
-			next.y += increase.y;
+
 			// Check if the randomically selected cell is not occupied by an obstacle
-			if (IsObstaclePresent(next, obstacles))
+			if (IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles))
 			{
+				prevBox = true;
+
 				// Randomically go top or bottom if possible (1 / -1)
 				int randomDirection = (random(0, 1) ? 1 : -1);
 
 				from.x += (from.x + randomDirection > 0 && from.x + randomDirection < gridSize.x - 1)
-							  ? randomDirection : -randomDirection;
+							  ? randomDirection
+							  : -randomDirection;
 
 				path.push_back(from);
 				vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, level, obstacles);
 				path.insert(path.end(), newPath.begin(), newPath.end());
 				return path;
 			}
+			prevBox = false;
 
 			from.y += increase.y;
 		}
-		
+
 		path.push_back(from);
 	}
 

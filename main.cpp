@@ -4,7 +4,6 @@
 #include <windows.h>
 #include <conio.h>
 #include "src/level.cpp"
-#include "src/random.cpp"
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -13,12 +12,12 @@ int main(int argc, char *argv[])
 		throw invalid_argument("Missing arguments!");
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
-	// for (;;) //int i = 0; i < 104; i++
-	// {
-	// 	system("cls");
-	// 	level.Generate();
-	// 	level.Show();
-	// }
+	for (;;) //int i = 0; i < 104; i++
+	{
+		system("cls");
+		level.Generate();
+		level.Show();
+	}
 
 	level.Generate();
 	level.Show();
@@ -42,7 +41,7 @@ int main(int argc, char *argv[])
 			level.PlayerMove(RIGHT);
 			break;
 		case 'r':
-			// system("cls");
+			system("cls");
 			level.Generate();
 			break;
 		case 'e':

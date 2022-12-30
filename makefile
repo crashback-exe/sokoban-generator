@@ -1,5 +1,7 @@
 all: clear compile exe
 
+opt: clear compile_optimized exe
+
 clear:
 	cls
 

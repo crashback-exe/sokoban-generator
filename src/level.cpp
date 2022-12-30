@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <stdexcept>
 #include <vector>
 #include <iterator>
@@ -11,6 +12,7 @@
 
 using std::cout;
 using std::endl;
+using std::copy;
 using std::invalid_argument;
 using std::map;
 using std::to_string;
@@ -63,64 +65,38 @@ private:
 	/// @brief Generate boxes and targets in the level
 	void GenerateGoals()
 	{
+		vector<Coords2D> obstacles = boxesPos;
+		obstacles.push_back(playerPos);
+
 		Coords2D placementCell;
-		bool isOccupied;
 
 		for (int i = 0; i < boxCount; i++)
 		{
 			// Target
-			do
+			for (;;)
 			{
-				isOccupied = false;
-
 				placementCell.x = random(0, width - 1);
 				placementCell.y = random(0, height - 1);
 
-				if (level[placementCell.y][placementCell.x] != WALL ||
-					(playerPos.x == placementCell.x && playerPos.y == placementCell.y))
-				{
-					isOccupied = true;
-					continue;
-				}
-
-				for (Coords2D box : boxesPos)
-				{
-					if (box.x == placementCell.x && box.y == placementCell.y)
-					{
-						isOccupied = true;
-						break;
-					}
-				}
-			} while (isOccupied);
+				if (level[placementCell.y][placementCell.x] == WALL
+					&& !IsObstaclePresent(placementCell, obstacles))
+					break;
+			}
 
 			targetPos[i].x = placementCell.x;
 			targetPos[i].y = placementCell.y;
 			level[targetPos[i].y][targetPos[i].x] = TARGET;
 
 			// Box
-			do
+			for (;;)
 			{
-				isOccupied = false;
-
 				placementCell.x = random(1, width - 2);
 				placementCell.y = random(1, height - 2);
 
-				if (level[placementCell.y][placementCell.x] != WALL ||
-					(playerPos.x == placementCell.x && playerPos.y == placementCell.y))
-				{
-					isOccupied = true;
-					continue;
-				}
-
-				for (Coords2D box : boxesPos)
-				{
-					if (box.x == placementCell.x && box.y == placementCell.y)
-					{
-						isOccupied = true;
-						break;
-					}
-				}
-			} while (isOccupied);
+				if (level[placementCell.y][placementCell.x] == WALL
+					&& !IsObstaclePresent(placementCell, obstacles))
+					break;
+			}
 
 			boxesPos[i].x = placementCell.x;
 			boxesPos[i].y = placementCell.y;
@@ -232,13 +208,6 @@ public:
 		// Randomically place player in the level
 		PlacePlayer();
 		GenerateGoals();
-
-		/* Debug */
-		cout << "/*     */" << endl;
-		Show();
-		cout << "/*     */" << endl;
-		/* Debug */
-
 		GeneratePaths();
 	}
 
