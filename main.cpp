@@ -11,18 +11,20 @@ int main(int argc, char *argv[])
 		cout << "Usage: Sokoban.exe <height> <width> <box-count> [json] [debug]";
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
-	/* Debug */
-	if (argv[3] == "debug")
+	if (string(argv[4]) == "debug")
 		for (;;)
 		{
 			system("cls");
 			level.Generate();
 			level.Show();
 		}
-	/* Debug */
 
-	if (argv[3] == "json")
+	if (string(argv[4]) == "json")
+	{
+		level.Generate();
 		level.ShowJson();
+		return 0;
+	}
 
 	level.Generate();
 
@@ -57,4 +59,6 @@ int main(int argc, char *argv[])
 		}
 		system("cls");
 	}
+
+	return 0;
 }
