@@ -16,16 +16,6 @@ using std::map;
 using std::to_string;
 using std::vector;
 
-/// @brief Types of cells
-enum CELL_TYPES
-{
-	PLAYER = '@',
-	WALL = '#',
-	PATH = ' ',
-	BOX = '$',
-	TARGET = '.',
-};
-
 /// @brief List of possible directions
 enum DIRECTIONS
 {
@@ -46,6 +36,9 @@ map<DIRECTIONS, Coords2D> STEPS = {
 class SokobanLevel
 {
 private:
+	const char PLAYER = '@';
+	const char BOX = '$';
+
 	Coords2D playerPos;
 	vector<Coords2D> boxesPos;
 	vector<Coords2D> targetPos;
@@ -143,35 +136,11 @@ private:
 		Coords2D gridSize(width, height),
 			boxGridSize(width - 1, height - 1);
 
-		/// @brief Optimize a given path removing useless ways
-		/// @param path The path to be optimized
-		auto OptimizePath = [](vector<Coords2D> &path)
-		{
-			int pathSize = (path.size() - 2);
-
-			auto ii = path.begin();
-			while (ii != path.end())
-			{
-				auto ij = ii + 1;
-				while (ij != path.end())
-				{
-					if (ii->x == ij->x && ii->y == ij->y)
-					{
-						path.erase(ii, ij);
-						ij = ii;
-					}
-
-					ij++;
-				}
-				ii++;
-			}
-		};
-
 		// Generate the paths between box and his target
 		for (int i = 0; i < boxCount; i++)
 		{
 			// Find a path between the box and his corresponding target
-			path = FindRandomPath(boxesPos[i], targetPos[i], boxGridSize, boxesPos);
+			path = FindRandomPath(boxesPos[i], targetPos[i], boxGridSize, level, boxesPos);
 
 			// Optimize the path to get rid of useless cells
 			OptimizePath(path);
@@ -197,9 +166,8 @@ private:
 				// If it's the first iteration, calculate the path between the player and the first cell
 				if (j == 0)
 				{
-
 					// Find the path
-					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, vector<Coords2D>{boxesPos[i]});
+					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, level, vector<Coords2D>{boxesPos[i]});
 
 					// Insert the path
 					paths.insert(paths.end(), tempPath.begin(), tempPath.end());
@@ -209,7 +177,7 @@ private:
 				}
 
 				// Find the path between the cell and the cell before
-				tempPath = FindRandomPath(path[j - 1], oppositeCoord, gridSize, vector<Coords2D>{path[j]});
+				tempPath = FindRandomPath(path[j - 1], oppositeCoord, gridSize, level, vector<Coords2D>{path[j]});
 
 				// Optimize the path
 				OptimizePath(tempPath);
@@ -265,6 +233,13 @@ public:
 		// Randomically place player in the level
 		PlacePlayer();
 		GenerateGoals();
+
+		/* Debug */
+		cout << "/*     */" << endl;
+		Show();
+		cout << "/*     */" << endl;
+		/* Debug */
+
 		GeneratePaths();
 	}
 
@@ -286,38 +261,27 @@ public:
 		for (Coords2D &boxPos : boxesPos)
 		{
 			// If corresponds, check if the positon behind that box is free
-			if (to.x == boxPos.x && to.y == boxPos.y)
+			if (to.x != boxPos.x || to.y != boxPos.y)
+				continue;
+
+			boxTo.x = to.x + STEPS[direction].x;
+			boxTo.y = to.y + STEPS[direction].y;
+
+			// Check if the cell after the box is free
+			if ((boxTo.x < width && boxTo.y < height && boxTo.x >= 0 && boxTo.y >= 0) &&
+				level[boxTo.y][boxTo.x] != WALL &&
+				!IsObstaclePresent(boxTo, boxesPos))
 			{
+				boxPos.x = boxTo.x;
+				boxPos.y = boxTo.y;
 
-				boxTo.x = to.x + STEPS[direction].x;
-				boxTo.y = to.y + STEPS[direction].y;
-
-				// Check if the cell after the box is free
-				if ((boxTo.x < width && boxTo.y < height && boxTo.x >= 0 && boxTo.y >= 0) &&
-					(level[boxTo.y][boxTo.x] == PATH || level[boxTo.y][boxTo.x] == TARGET))
-				{
-					bool isBoxBehind = false;
-					// Check if behind the box is another box
-					for (Coords2D everyOtherBoxPos : boxesPos)
-					{
-						if (everyOtherBoxPos.x == boxTo.x && everyOtherBoxPos.y == boxTo.y)
-							isBoxBehind = true;
-					}
-
-					if (isBoxBehind)
-						return;
-
-					boxPos.x = boxTo.x;
-					boxPos.y = boxTo.y;
-
-					playerPos.x = to.x;
-					playerPos.y = to.y;
-
-					return;
-				}
+				playerPos.x = to.x;
+				playerPos.y = to.y;
 
 				return;
 			}
+
+			return;
 		}
 
 		playerPos.x = to.x;
@@ -400,7 +364,7 @@ public:
 			cout << "[" << pos.x << "," << pos.y << "],";
 		}
 		cout << "\b]";
-		
+
 		cout << "}" << endl;
 	}
 };

@@ -4,6 +4,9 @@ clear:
 	cls
 
 compile:
+	g++ main.cpp -o Sokoban.exe -std=c++20 -I ./src
+
+compile_optimized:
 	g++ main.cpp -o Sokoban.exe -static -static-libgcc -static-libstdc++ -std=c++20 -I ./src -O2
 
 exe:
