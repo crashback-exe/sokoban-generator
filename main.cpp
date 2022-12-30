@@ -1,6 +1,5 @@
 #include <vector>
 #include <iostream>
-#include <stdexcept>
 #include <windows.h>
 #include <conio.h>
 #include "src/level.cpp"
@@ -9,24 +8,29 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	if (argc <= 3)
-		throw invalid_argument("Missing arguments!");
+		cout << "Usage: Sokoban.exe <height> <width> <box-count> [json] [debug]";
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
 	/* Debug */
-	// for (;;)
-	// {
-	// 	system("cls");
-	// 	level.Generate();
-	// 	level.Show();
-	// }
+	if (argv[3] == "debug")
+		for (;;)
+		{
+			system("cls");
+			level.Generate();
+			level.Show();
+		}
 	/* Debug */
 
+	if (argv[3] == "json")
+		level.ShowJson();
+
 	level.Generate();
-	level.Show();
 
 	char input;
 	for (;;)
 	{
+		level.Show();
+		cout << "Move with WASD, R to regenerate, E to exit" << endl;
 		input = getch();
 		switch (input)
 		{
@@ -52,6 +56,5 @@ int main(int argc, char *argv[])
 			continue;
 		}
 		system("cls");
-		level.Show();
 	}
 }
