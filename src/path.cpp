@@ -27,6 +27,7 @@ enum CELL_TYPES
 /// @return true if there is, otherwise false
 bool IsObstaclePresent(Coords2D coords, vector<Coords2D> obstacles)
 {
+	/* Iterate over all the obstacles, if one of them has the same coordinates as the ones given, return false*/
 	for (Coords2D obstacle : obstacles)
 		if (coords.x == obstacle.x && coords.y == obstacle.y)
 			return true;
@@ -72,23 +73,24 @@ Coords2D FindDirection(Coords2D from, Coords2D to)
 /// @param path The path to be optimized
 void OptimizePath(vector<Coords2D> &path)
 {
+	/* Iterate over the path and if a coordinate occurs more than once, remove the coordinates between the two*/
 	int pathSize = (path.size() - 2);
 
-	auto ii = path.begin();
-	while (ii != path.end())
+	auto it_y = path.begin();
+	while (it_y != path.end())
 	{
-		auto ij = ii + 1;
-		while (ij != path.end())
+		auto it_x = it_y + 1;
+		while (it_x != path.end())
 		{
-			if (ii->x == ij->x && ii->y == ij->y)
+			if (it_y->x == it_x->x && it_y->y == it_x->y)
 			{
-				path.erase(ii, ij);
-				ij = ii;
+				path.erase(it_y, it_x);
+				it_x = it_y;
 			}
 
-			ij++;
+			it_x++;
 		}
-		ii++;
+		it_y++;
 	}
 }
 
@@ -101,37 +103,44 @@ void OptimizePath(vector<Coords2D> &path)
 /// @return A Coords2D vector with all the points of the path
 vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, vector<vector<CELL_TYPES>> level, vector<Coords2D> obstacles = {})
 {
-	static bool prevBox = false;
+	/* Until we're not at the end, keep finding a random cell towards the end, if a box is found, dodge it and continue
+	   searching paths skipping the cell where we were stuck */
+	/* Nore: we prefer path that are already carved */
+
+	static bool previouslyDodgedBox = false;
 
 	vector<Coords2D> path;
 	Coords2D next, increase = FindDirection(from, to);
 
 	path.push_back(from);
 
+	// While we're not at the end
 	while (from.x != to.x || from.y != to.y)
 	{
-
+		// If X is already carved, prefer it
 		if (from.x + increase.x >= 0 && from.x + increase.x < gridSize.x			// Inside the grid
-			&& !prevBox																// Hasn't passed a box previously
+			&& !previouslyDodgedBox													// Hasn't passed a box previously
 			&& level[from.y][from.x + increase.x] != WALL							// Not a wall
 			&& !IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles) // Not a box
 			&& from.x != to.x)
 			from.x += increase.x;
-
+		// If Y is already carved, prefer it
 		else if (from.y + increase.y >= 0 && from.y + increase.y < gridSize.y			 // Inside the grid
-				 && !prevBox															 // Hasn't passed a box previously
+				 && !previouslyDodgedBox												 // Hasn't passed a box previously
 				 && level[from.y + increase.y][from.x] != WALL							 // Not a wall
 				 && !IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles) // Not a box
 				 && from.y != to.y)
 			from.y += increase.y;
+		/* If X and Y are not carved, choose randomly between X and Y */
 
+		// X is chosen
 		else if ((random(0, 1) && from.x != to.x) || from.y == to.y)
 		{
 
 			// Check if the randomically selected cell is not occupied by an obstacle
 			if (IsObstaclePresent(Coords2D(from.x + increase.x, from.y), obstacles))
 			{
-				prevBox = true;
+				previouslyDodgedBox = true;
 
 				// Randomically go top or bottom if possible (1 / -1)
 				int randomDirection = (random(0, 1) ? 1 : -1);
@@ -140,23 +149,27 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 							  ? randomDirection
 							  : -randomDirection;
 
+				// Push the chosen coordinate in the path
 				path.push_back(from);
-				vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, level, obstacles);
-				path.insert(path.end(), newPath.begin(), newPath.end());
+
+				// Find a new path from the cell to the end and return it
+				vector<Coords2D> restOfPath = FindRandomPath(from, to, gridSize, level, obstacles);
+				path.insert(path.end(), restOfPath.begin(), restOfPath.end());
 				return path;
 			}
-			prevBox = false;
+			previouslyDodgedBox = false;
 
 			from.x += increase.x;
 		}
 
+		// Y is chosen
 		else
 		{
 
 			// Check if the randomically selected cell is not occupied by an obstacle
 			if (IsObstaclePresent(Coords2D(from.x, from.y + increase.y), obstacles))
 			{
-				prevBox = true;
+				previouslyDodgedBox = true;
 
 				// Randomically go top or bottom if possible (1 / -1)
 				int randomDirection = (random(0, 1) ? 1 : -1);
@@ -165,16 +178,21 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 							  ? randomDirection
 							  : -randomDirection;
 
+				// Push the chosen coordinate in the path
 				path.push_back(from);
-				vector<Coords2D> newPath = FindRandomPath(from, to, gridSize, level, obstacles);
-				path.insert(path.end(), newPath.begin(), newPath.end());
+
+				// Find a new path from the cell to the end and return it
+				vector<Coords2D> restOfPath = FindRandomPath(from, to, gridSize, level, obstacles);
+				path.insert(path.end(), restOfPath.begin(), restOfPath.end());
+
 				return path;
 			}
-			prevBox = false;
+			previouslyDodgedBox = false;
 
 			from.y += increase.y;
 		}
 
+		// Push the chosen coordinate in the path
 		path.push_back(from);
 	}
 
