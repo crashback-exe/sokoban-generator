@@ -10,9 +10,9 @@
 #include "random.cpp"
 #include "path.cpp"
 
+using std::copy;
 using std::cout;
 using std::endl;
-using std::copy;
 using std::invalid_argument;
 using std::map;
 using std::to_string;
@@ -65,7 +65,7 @@ private:
 	/// @brief Generate boxes and targets in the level
 	void GenerateGoals()
 	{
-		vector<Coords2D> obstacles = boxesPos;
+		vector<Coords2D> obstacles;
 		obstacles.push_back(playerPos);
 
 		Coords2D placementCell;
@@ -78,14 +78,14 @@ private:
 				placementCell.x = random(0, width - 1);
 				placementCell.y = random(0, height - 1);
 
-				if (level[placementCell.y][placementCell.x] == WALL
-					&& !IsObstaclePresent(placementCell, obstacles))
+				if (!IsObstaclePresent(placementCell, obstacles))
 					break;
 			}
 
 			targetPos[i].x = placementCell.x;
 			targetPos[i].y = placementCell.y;
 			level[targetPos[i].y][targetPos[i].x] = TARGET;
+			obstacles.push_back(targetPos[i]);
 
 			// Box
 			for (;;)
@@ -93,13 +93,13 @@ private:
 				placementCell.x = random(1, width - 2);
 				placementCell.y = random(1, height - 2);
 
-				if (level[placementCell.y][placementCell.x] == WALL
-					&& !IsObstaclePresent(placementCell, obstacles))
+				if (!IsObstaclePresent(placementCell, obstacles))
 					break;
 			}
 
 			boxesPos[i].x = placementCell.x;
 			boxesPos[i].y = placementCell.y;
+			obstacles.push_back(boxesPos[i]);
 		}
 	}
 

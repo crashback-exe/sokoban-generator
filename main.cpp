@@ -12,12 +12,12 @@ int main(int argc, char *argv[])
 		throw invalid_argument("Missing arguments!");
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
-	for (;;) //int i = 0; i < 104; i++
-	{
-		system("cls");
-		level.Generate();
-		level.Show();
-	}
+	// for (;;) //int i = 0; i < 104; i++
+	// {
+	// 	system("cls");
+	// 	level.Generate();
+	// 	level.Show();
+	// }
 
 	level.Generate();
 	level.Show();
