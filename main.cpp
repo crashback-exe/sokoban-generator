@@ -9,21 +9,24 @@ int main(int argc, char *argv[])
 {
 	if (argc <= 3)
 		cout << "Usage: Sokoban.exe <height> <width> <box-count> [json] [debug]";
+	
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
-	if (string(argv[4]) == "debug")
-		for (;;)
-		{
-			system("cls");
-			level.Generate();
-			level.Show();
-		}
-
-	if (string(argv[4]) == "json")
+	if (argc > 4)
 	{
-		level.Generate();
-		level.ShowJson();
-		return 0;
+		if (string(argv[4]) == "debug")
+			for (;;)
+			{
+				system("cls");
+				level.Generate();
+				level.Show();
+			}
+
+		if (string(argv[4]) == "json")
+		{
+			level.Generate();
+			level.ShowJson();
+		}
 	}
 
 	level.Generate();
