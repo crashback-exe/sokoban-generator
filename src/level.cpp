@@ -285,7 +285,6 @@ public:
 	void Show()
 	{
 		Coords2D pos;
-		int i = 0, j = 0;
 
 		for (pos.y = 0; pos.y < height; pos.y++)
 		{
@@ -297,14 +296,12 @@ public:
 
 				else if (IsPresent(pos, boxesPos))
 				{
-					cout <<	(char)(i + 'A') << " ";
-					i ++;
+					cout <<	BOX << " ";
 				}
 
 				else if (IsPresent(pos, targetPos))
 				{
-					j ++;
-					cout << j << " ";
+					cout << TARGET << " ";
 				}
 
 				else

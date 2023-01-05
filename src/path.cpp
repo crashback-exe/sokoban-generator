@@ -11,6 +11,7 @@ struct Coords2D
 {
 	int x;
 	int y;
+	Coords2D(int x=-1, int y=-1) : x(x), y(y) {}
 };
 
 /// @brief Types of cells

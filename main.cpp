@@ -10,7 +10,10 @@ int main(int argc, char *argv[])
 	string usage = "Usage: Sokoban.exe <height> <width> <box-count> [play] [json] [debug]";
 	
 	if (argc <= 3)
+	{
 		cout << usage;
+		return 1;
+	}
 
 	SokobanLevel level(stoi(argv[1]), stoi(argv[2]), stoi(argv[3]));
 
@@ -23,9 +26,7 @@ int main(int argc, char *argv[])
 				for (int l = 0; l < (int)((k / 10) + 1); l++)
 					cout << "\b";
 				cout << k;
-				//system("cls");
 				level.Generate();
-				//level.Show();
 			}
 			return 0;
 		}
@@ -70,8 +71,7 @@ int main(int argc, char *argv[])
 				default:
 					continue;
 				}
-				// DEBUG
-				// system("cls");
+				system("cls");
 			}
 
 			return 0;
