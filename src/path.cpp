@@ -120,16 +120,18 @@ vector<Coords2D> FindRandomPath(Coords2D from, Coords2D to, Coords2D gridSize, v
 		if (from.x + increase.x >= 0 && from.x + increase.x < gridSize.x			// Inside the grid
 			&& !previouslyDodgedBox													// Hasn't passed a box previously
 			&& level[from.y][from.x + increase.x] != WALL							// Not a wall
-			&& !IsPresent(Coords2D(from.x + increase.x, from.y), obstacles) // Not a box
+			&& !IsPresent(Coords2D(from.x + increase.x, from.y), obstacles)			// Not a box
 			&& from.x != to.x)
 			from.x += increase.x;
+		
 		// If Y is already carved, prefer it
-		else if (from.y + increase.y >= 0 && from.y + increase.y < gridSize.y			 // Inside the grid
-				 && !previouslyDodgedBox												 // Hasn't passed a box previously
-				 && level[from.y + increase.y][from.x] != WALL							 // Not a wall
-				 && !IsPresent(Coords2D(from.x, from.y + increase.y), obstacles) // Not a box
+		else if (from.y + increase.y >= 0 && from.y + increase.y < gridSize.y		// Inside the grid
+				 && !previouslyDodgedBox											// Hasn't passed a box previously
+				 && level[from.y + increase.y][from.x] != WALL						// Not a wall
+				 && !IsPresent(Coords2D(from.x, from.y + increase.y), obstacles) 	// Not a box
 				 && from.y != to.y)
 			from.y += increase.y;
+		
 		/* If X and Y are not carved, choose randomly between X and Y */
 
 		// X is chosen

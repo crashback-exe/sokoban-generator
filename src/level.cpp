@@ -122,10 +122,10 @@ private:
 			// Insert the generated path into the to-be-carved cell list
 			paths.insert(paths.end(), path.begin(), path.end());
 
-			int size = path.size();
+			int elementCount = path.size() - 1;
 
 			// Carve the path needed for the player to move the box
-			for (int j = 0; j < size - 1; j++)
+			for (int j = 0; j < elementCount; j++)
 			{
 				/**
 				 * For every coordinate in the path, find the opposite direction the player should
@@ -133,16 +133,42 @@ private:
 				 */
 
 				// Calculate the opposite coordinate of the coordinate pair
+				Coords2D direction = FindDirection(path[j], path[j + 1]);
 				Coords2D oppositeCoord;
-				oppositeCoord.x = path[j].x - FindDirection(path[j], path[j + 1]).x;
-				oppositeCoord.y = path[j].y - FindDirection(path[j], path[j + 1]).y;
+				oppositeCoord.x = path[j].x - direction.x;
+				oppositeCoord.y = path[j].y - direction.y;
 
 				// If it's the first iteration, calculate the path between the player and the first cell
 				if (j == 0)
 				{
-					// Find the path
-					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, level, vector<Coords2D>{boxesPos[i]});
+					vector<Coords2D> obstacles = boxesPos;
 
+					// If the first cell to move the box is occupied itself by a box, don't consider the box that
+					// occupied that cell as an obstacle
+					//printf("%c\n", (char)i+'A');
+					
+					//printf("Path:\n");
+					//for (Coords2D coord : path) printf("\tx: %d y: %d\n", coord.x, coord.y);
+
+					//printf("OppositeCoord: %d %d\n", oppositeCoord.x, oppositeCoord.y);
+					for (int k = 0; k < boxCount; k++)
+					{
+						if (boxesPos[k].x == oppositeCoord.x && boxesPos[k].y == oppositeCoord.y)
+						{
+							//printf("Box: %d %d\n", boxesPos[k].x, boxesPos[k].y);
+							obstacles.erase(obstacles.begin() + k);
+						}
+					}
+
+					// for (Coords2D obstacle : obstacles)
+					// {
+					// 	printf("Ostacolo: %d %d\n", obstacle.x, obstacle.y);
+					// }
+					
+					// Find the path
+					tempPath = FindRandomPath(playerPos, oppositeCoord, gridSize, level, obstacles);
+					
+					//printf("FindRandomPath done.\n");
 					// Insert the path
 					paths.insert(paths.end(), tempPath.begin(), tempPath.end());
 
@@ -204,9 +230,11 @@ public:
 		boxesPos.resize(boxCount, Coords2D(-1, -1));
 		targetPos.resize(boxCount, Coords2D(-1, -1));
 
-		// Randomically place player in the level
+		// Place the player in the level
 		PlacePlayer();
+		// Generate the boxes and the targets
 		GenerateGoals();
+		// Generate the paths
 		GeneratePaths();
 	}
 
@@ -257,20 +285,27 @@ public:
 	void Show()
 	{
 		Coords2D pos;
+		int i = 0, j = 0;
 
 		for (pos.y = 0; pos.y < height; pos.y++)
 		{
-			cout << pos.y << "  ";
+			cout << "  ";
 			for (pos.x = 0; pos.x < width; pos.x++)
 			{
 				if (IsPresent(pos, vector<Coords2D>{playerPos}))
-					cout << PLAYER << " "; // PLAYER
+					cout << PLAYER << " ";
 
 				else if (IsPresent(pos, boxesPos))
-					cout << BOX << " "; // BOXES
+				{
+					cout <<	(char)(i + 'A') << " ";
+					i ++;
+				}
 
 				else if (IsPresent(pos, targetPos))
-					cout << TARGET << " "; // TARGETS
+				{
+					j ++;
+					cout << j << " ";
+				}
 
 				else
 					cout << (char)level[pos.y][pos.x] << " ";
