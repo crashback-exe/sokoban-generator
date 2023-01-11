@@ -2,7 +2,8 @@
 # Sokoban level generator
 
 A sokoban level generator
-Usage: `Sokoban.exe <height> <width> <box-count> [json] [debug]`
+Usage: `Sokoban.exe <height> <width> <box-count> [play] [json] [debug]`
+
 Params:
 - `height` - Board height
 - `width` - Board width
@@ -12,6 +13,27 @@ Params:
 - `debug` - (Optional) Generate and show boards infinitely
 
 The download of the executable can be found [here](https://github.com/crashback-exe/sokoban-generator/releases/latest)
+
+*Note: without specifying any optional flags the output will just be a generated level with the player*
+
+## Compiling
+If you have `make` installed on your system you can do
+```bash
+$ make compile
+```
+or (to make the executable more portable and fast
+```bash
+$ make compile_optimized
+```
+
+Without using `make`
+```bash
+$ g++ main.cpp -o Sokoban.exe -static-libgcc -std=c++20 -I ./src
+```
+or (fast and portable)
+```bash
+$ g++ main.cpp -o Sokoban.exe -static -static-libgcc -static-libstdc++ -std=c++20 -I ./src -O2
+```
 
 ## Example
 `Sokoban.exe 8 8 3 play`
