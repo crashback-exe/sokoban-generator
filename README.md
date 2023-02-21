@@ -1,7 +1,8 @@
 
 # Sokoban level generator
 
-A sokoban level generator
+Small program that generates random Sokoban levels
+
 Usage: `Sokoban.exe <height> <width> <box-count> [play] [json] [debug]`
 
 Params:
