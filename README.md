@@ -22,7 +22,7 @@ If you have `make` installed on your system you can do
 ```bash
 $ make compile
 ```
-or (to make the executable more portable and fast
+or (to make the executable more portable and fast)
 ```bash
 $ make compile_optimized
 ```
